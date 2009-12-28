@@ -1,0 +1,12 @@
+Revision history Bot::Jabbot
+
+v0.03
+ * Added "presence" and "part" muc callbacks
+ * Added check for config and essential config settings presence
+
+v0.02
+ * Added multilanguage support
+
+v0.01
+ *initial version
+
