@@ -92,7 +92,7 @@ reference to module object
 
 =item B<connection>
 
-An AnyEcent::XMPP::Connection assotiated with bot
+An AnyEvent::XMPP::Connection assotiated with bot
 
 =item B<jid>
 
@@ -134,6 +134,102 @@ reference to bot object
 =back
 
 returns: reply text or undef.
+
+=head3 muc_join(self,user,room,connection);
+
+called when user joins room
+
+=over 4
+
+=item B<self>
+
+reference to module object
+
+=item B<user>
+
+reference to object of joined user
+
+=item B<room>
+
+AnyEvent::XMPP::Ext::MUC::Room object
+
+=item B<connection>
+
+An AnyEvent::XMPP::Connection assotiated with bot
+
+=back
+
+=head3 muc_part(self,user,room,connection);
+
+called when user parts room (or banned, or kicked).
+
+=over 4
+
+=item B<self>
+
+reference to module object
+
+=item B<user>
+
+reference to object of parted user
+
+=item B<room>
+
+AnyEvent::XMPP::Ext::MUC::Room object
+
+=item B<connection>
+
+An AnyEvent::XMPP::Connection assotiated with bot
+
+=back
+
+=head3 muc_subject_change(self,room,msg,connection);
+
+called when someone changes conference subject.
+
+=over 4
+
+=item B<self>
+
+reference to module object
+
+=item B<room>
+
+AnyEvent::XMPP::Ext::MUC::Room object
+
+=item B<msg>
+
+AnyEvent::XMPP::Message object
+
+=item B<connection>
+
+An AnyEvent::XMPP::Connection assotiated with bot
+
+=back
+
+=head3 muc_presence(self,user,room,connection);
+
+called when someone changes conference subject.
+
+=over 4
+
+=item B<self>
+
+reference to module object
+
+=item B<room>
+
+AnyEvent::XMPP::Ext::MUC::Room object
+
+=item B<user>
+
+AnyEvent::XMPP::Ext::MUC::User object
+
+=item B<connection>
+
+An AnyEvent::XMPP::Connection assotiated with bot
+
+=back
 
 =head3 message(self,msg,bot);
 

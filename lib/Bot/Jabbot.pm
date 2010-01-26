@@ -39,7 +39,7 @@ use Data::Dumper;
 use Class::MOP;
 use Data::Localize;
 
-our $VERSION = 0.3;
+our $VERSION = 0.4;
 
 =head2 new(...)
 
@@ -116,7 +116,15 @@ sub start
 
             foreach my $room(@{$self->{config}->{rooms}})
             {
-                $self->{muc}->join_room ($acc->connection, $room, $self->{config}->{nickname});#node_jid ($acc->jid));
+                if (ref $room eq 'HASH')
+                {
+                    my @keys=keys %{$room};
+                    $self->{muc}->join_room ($acc->connection, $keys[0], $self->{config}->{nickname},%{$room->{$keys[0]}});
+                }
+                else
+                {
+                    $self->{muc}->join_room ($acc->connection, $room, $self->{config}->{nickname});
+                }
             }
 
             $self->{muc}->reg_cb(
@@ -171,9 +179,29 @@ sub start
                         }
                     }
                 },
-		part => sub {
+                subject_change => sub {
+                    my ($cl, $room, $msg,$is_echo) = @_;
+                    if(!$is_echo)
+                        while ( my ($key, $mod) = each(%{$self->{modules}}) )
+                        {
+                            if ($mod->can("muc_subject_change"))
+                            {
+                                $mod->muc_subject_change($room,$msg,$cl);
+                            }
+                        }
+                },
+                join => sub {
                     my ($cl, $room, $user) = @_;
-                    my $mynick = res_jid ($room->nick_jid);
+                    while ( my ($key, $mod) = each(%{$self->{modules}}) )
+                    {
+                        if ($mod->can("muc_join"))
+                        {
+                            $mod->muc_join($user,$room,$cl);
+                        }
+                    }
+                },
+                part => sub {
+                    my ($cl, $room, $user) = @_;
                     while ( my ($key, $mod) = each(%{$self->{modules}}) )
                     {
                         if ($mod->can("muc_part"))
@@ -182,7 +210,7 @@ sub start
                         }
                     }
                 },
-		presence => sub {
+                presence => sub {
                     my ($cl, $room, $user) = @_;
                     my $mynick = res_jid ($room->nick_jid);
                     while ( my ($key, $mod) = each(%{$self->{modules}}) )
@@ -293,6 +321,7 @@ __END__
     replier: Bot::Jabbot::Module::Replier
   rooms:
     - someroom@conference.somehost.ru
+        password: secret
     - someotherroom@conference.somehost.ru
   status: "I'm bot, i'm bot, you know that i'm a bot"
   lang: en
@@ -305,7 +334,7 @@ B<nickname> - nickname for MUC
 
 B<modules> - hash of module name => module package. You can define any unical module name, as it used only for !help command
 
-B<rooms> - list of MUC rooms jid's
+B<rooms> - list of MUC rooms jid's. Room can be eather a string or a hash with join parameters (for info look at %args description in AnyEvent::XMPP::Ext::MUC join_room method)
 
 B<debug> - enable debug output
 
