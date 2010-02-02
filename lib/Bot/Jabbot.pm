@@ -39,7 +39,7 @@ use Data::Dumper;
 use Class::MOP;
 use Data::Localize;
 
-our $VERSION = 0.4;
+our $VERSION = 0.41;
 
 =head2 new(...)
 
@@ -182,6 +182,7 @@ sub start
                 subject_change => sub {
                     my ($cl, $room, $msg,$is_echo) = @_;
                     if(!$is_echo)
+                    {
                         while ( my ($key, $mod) = each(%{$self->{modules}}) )
                         {
                             if ($mod->can("muc_subject_change"))
@@ -189,6 +190,7 @@ sub start
                                 $mod->muc_subject_change($room,$msg,$cl);
                             }
                         }
+                    }
                 },
                 join => sub {
                     my ($cl, $room, $user) = @_;

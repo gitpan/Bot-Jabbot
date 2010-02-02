@@ -1,5 +1,8 @@
 Revision history Bot::Jabbot
 
+v0.41
+ * Fixed bug that prevented bot from running.
+
 v0.4
  * Added support for MUC join parameters in config
  * Added new module callbacks: muc_join, muc_part, muc_presence, muc_subject_change
